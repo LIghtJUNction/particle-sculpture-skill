@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-11T15:37:32Z",
+  "title": "Design System: Particle Sculpture",
+  "extensions": {
+    "colorMeta": {
+      "poster-ground": {
+        "role": "neutral",
+        "displayName": "Green-black ground"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Paper ink"
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Sage text"
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Quiet green rule"
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Warm sand"
+      },
+      "light-poster-ground": {
+        "role": "neutral",
+        "displayName": "Warm paper ground"
+      },
+      "light-ink": {
+        "role": "neutral",
+        "displayName": "Deep green ink"
+      },
+      "light-muted": {
+        "role": "neutral",
+        "displayName": "Light-theme sage text"
+      },
+      "light-line": {
+        "role": "neutral",
+        "displayName": "Light-theme green rule"
+      },
+      "light-accent": {
+        "role": "primary",
+        "displayName": "Warm brown"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Editorial headline",
+        "purpose": "Scene title with italic accent emphasis; mobile sizing is documented in DESIGN.md Layout."
+      },
+      "title": {
+        "displayName": "Serif wordmark",
+        "purpose": "The Particle Sculpture home link."
+      },
+      "body": {
+        "displayName": "System sans",
+        "purpose": "Supporting copy, desktop navigation and text controls."
+      },
+      "label": {
+        "displayName": "Interaction hint",
+        "purpose": "Centered stage status; mobile copy and controls also use 13px."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "apple-turn",
+        "value": "16s per revolution",
+        "purpose": "Continuous apple rotation while playing."
+      },
+      {
+        "name": "apple-bob",
+        "value": "4s period",
+        "purpose": "Small vertical movement during the turn."
+      },
+      {
+        "name": "bird-flap",
+        "value": "1.5 cycles/s",
+        "purpose": "Shoulder stroke with a delayed outer-wing bend."
+      },
+      {
+        "name": "auto-sequence",
+        "value": "7s hold; 1.6s morph",
+        "purpose": "Scatter/reform transition between procedural subjects."
+      },
+      {
+        "name": "brush-recovery",
+        "value": "critically damped; exp(-20 * deltaSeconds)",
+        "purpose": "Frame-rate-independent return of displaced points."
+      },
+      {
+        "name": "motion-preferences",
+        "value": "paused or reduced-motion: still; save-data: initially paused",
+        "purpose": "No continuous animation in these states; scene selection remains available."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "single-column",
+        "value": "700px"
+      },
+      {
+        "name": "fine-point-lattice",
+        "value": "680px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Text control",
+      "kind": "button",
+      "refersTo": "control",
+      "description": "Unselected scene, theme or pause control; transparent with visible text.",
+      "html": "<div class=\"ds-preview\"><button class=\"ds-control\" aria-pressed=\"false\">Bird</button></div>",
+      "css": ".ds-preview { background: var(--poster-ground, #0b100e); } .ds-control { cursor: pointer; font: 15px/1.6 ui-sans-serif, system-ui, sans-serif; color: var(--muted, #b4bbae); background: transparent; border: 0; border-bottom: 1px solid transparent; padding: 10px 0; min-height: 44px; } .ds-control:hover, .ds-control[aria-pressed=\"true\"] { color: var(--ink, #f3ecdf); border-color: var(--accent, #d4b48b); } .ds-control:focus-visible { outline: 2px solid var(--accent, #d4b48b); outline-offset: 6px; } .ds-control:disabled { opacity: .6; cursor: default; }"
+    },
+    {
+      "name": "Selected text control",
+      "kind": "button",
+      "refersTo": "control-selected",
+      "description": "Pressed scene or pause control, using the same underline as hover.",
+      "html": "<div class=\"ds-preview\"><button class=\"ds-control\" aria-pressed=\"true\">Apple</button></div>",
+      "css": ".ds-preview { background: var(--poster-ground, #0b100e); } .ds-control { cursor: pointer; font: 15px/1.6 ui-sans-serif, system-ui, sans-serif; color: var(--muted, #b4bbae); background: transparent; border: 0; border-bottom: 1px solid transparent; padding: 10px 0; min-height: 44px; } .ds-control:hover, .ds-control[aria-pressed=\"true\"] { color: var(--ink, #f3ecdf); border-color: var(--accent, #d4b48b); } .ds-control:focus-visible { outline: 2px solid var(--accent, #d4b48b); outline-offset: 6px; } .ds-control:disabled { opacity: .6; cursor: default; }"
+    },
+    {
+      "name": "Project navigation",
+      "kind": "nav",
+      "refersTo": "project-link",
+      "description": "Project links with authored decorative arrows; the first link hides on phones.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Project links\"><a href=\"https://api.lmm.best/\" target=\"_blank\" rel=\"noreferrer\">In the wild <svg aria-hidden=\"true\" viewBox=\"0 0 16 16\"><path d=\"M3 13 13 3M3 3h10v10\"/></svg></a><a href=\"https://github.com/LIghtJUNction/particle-sculpture-skill\" target=\"_blank\" rel=\"noreferrer\">Get the skill <svg aria-hidden=\"true\" viewBox=\"0 0 16 16\"><path d=\"M3 13 13 3M3 3h10v10\"/></svg></a></nav>",
+      "css": ".ds-nav { display: flex; gap: 32px; background: var(--poster-ground, #0b100e); color: var(--ink, #f3ecdf); font: 15px/1.6 ui-sans-serif, system-ui, sans-serif; } .ds-nav a { color: inherit; text-decoration: none; } .ds-nav a:hover { color: var(--accent, #d4b48b); } .ds-nav a:focus-visible { outline: 2px solid var(--accent, #d4b48b); outline-offset: 6px; } .ds-nav svg { margin-left: 5px; width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.3; } @media (max-width: 700px) { .ds-nav { gap: 17px; font-size: 12px; } .ds-nav a:first-child { display: none; } }"
+    },
+    {
+      "name": "Wordmark",
+      "kind": "nav",
+      "refersTo": "wordmark",
+      "description": "Self-hosted Bodoni home link with a Georgia fallback.",
+      "html": "<div class=\"ds-preview\"><a class=\"ds-wordmark\" href=\"./\" aria-label=\"Particle Sculpture home\">Particle Sculpture</a></div>",
+      "css": ".ds-preview { background: var(--poster-ground, #0b100e); } .ds-wordmark { color: var(--ink, #f3ecdf); font: 26px/1.6 Bodoni, Georgia, serif; text-decoration: none; } .ds-wordmark:hover { color: var(--accent, #d4b48b); } .ds-wordmark:focus-visible { outline: 2px solid var(--accent, #d4b48b); outline-offset: 6px; } @media (max-width: 700px) { .ds-wordmark { font-size: 21px; } }"
+    },
+    {
+      "name": "Interaction hint",
+      "kind": "custom",
+      "refersTo": "interaction-hint",
+      "description": "Status copy near the stage bottom; this isolated preview shows its typography.",
+      "html": "<p class=\"ds-hint\" aria-live=\"polite\">Move to scatter. Leave to reform.</p>",
+      "css": ".ds-hint { margin: 0; background: var(--poster-ground, #0b100e); color: var(--muted, #b4bbae); font: 13px/1.6 ui-sans-serif, system-ui, sans-serif; text-align: center; pointer-events: none; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Fine point field, editorial serif",
+    "overview": "Preserve the api.lmm.best particle identity: recognizable three-dimensional subjects built from fine points, with Bodoni headlines and a quiet surrounding interface. The sculpture supplies color, depth and movement; the page uses an open ground and restrained text controls.",
+    "keyCharacteristics": [
+      "A live point field with brush displacement and spring recovery.",
+      "Green-black and warm-paper themes, with editorial serif emphasis.",
+      "Flat framing, generous empty space and visible control labels."
+    ],
+    "rules": [],
+    "dos": [
+      "**Do** keep the Canvas ground identical to the page ground in both themes.",
+      "**Do** preserve visible labels, keyboard focus, pause, reduced motion and native mobile gestures."
+    ],
+    "donts": [
+      "**Don't** replace the live point field with an image or an unrelated visual effect.",
+      "**Don't** add cards or decorative data widgets to this showcase."
+    ]
+  }
+}
