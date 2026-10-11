@@ -1,0 +1,15 @@
+{
+  "origin": "Real Chromium viewport capture of this repository's index.html with actual Playwright mouse movement and scene button clicks; converted from recorded WebM using FFmpeg.",
+  "prompt": "Browser-recorded rotating procedural apple, actual pointer scattering and recovery, followed by a procedural bird flapping its wings. The pointer overlay follows actual browser events. This is not an image-generation prompt or synthetic browser screenshot.",
+  "source_project": "https://api.lmm.best/",
+  "source_revision": "8da4f3994299b7120c44b3fa579db35449a42188",
+  "capture_script": "scripts/record-demo.mjs",
+  "date": "2026-10-11",
+  "width": 960,
+  "height": 600,
+  "frames": 232,
+  "fps": 18,
+  "duration_seconds": 12.89,
+  "bytes": 7212463,
+  "sha256": "f05b162859d59da654a4a4ec2a620e4a439a0f93303b0006d86a4e7dd3d25d8c"
+}

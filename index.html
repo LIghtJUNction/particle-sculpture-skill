@@ -1,0 +1,46 @@
+<!doctype html>
+<!-- Copyright (C) 2026 LIghtJUNction; SPDX-License-Identifier: AGPL-3.0-or-later -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="A rotating apple, a bird in flight, and thousands of particles you can move. An open-source agent skill from api.lmm.best.">
+  <title>Particle Sculpture — move something beautiful</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="examples/apple-bird/style.css">
+</head>
+<body>
+  <header>
+    <a class="wordmark" href="./" aria-label="Particle Sculpture home">Particle Sculpture</a>
+    <nav aria-label="Project links">
+      <a href="https://api.lmm.best/" target="_blank" rel="noreferrer">In the wild <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M3 13 13 3M3 3h10v10"/></svg></a>
+      <a href="https://github.com/LIghtJUNction/particle-sculpture-skill" target="_blank" rel="noreferrer">Get the skill <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M3 13 13 3M3 3h10v10"/></svg></a>
+    </nav>
+  </header>
+  <main>
+    <div class="intro">
+      <h1 id="scene-title">A little<br><em>gravity.</em></h1>
+      <p id="scene-description">An apple, turning in a field of points.<br>Move through it. Watch it find its shape.</p>
+    </div>
+    <div class="stage">
+      <canvas id="sculpture" aria-label="An interactive three-dimensional particle sculpture. Move your mouse or swipe to scatter its points."></canvas>
+      <div class="cursor" aria-hidden="true"><svg width="24" height="30" viewBox="0 0 24 30"><path d="M3 2v23l6-6 5 9 4-2-5-9h9Z" fill="#f3ecdf" stroke="#172019" stroke-width="1.5"/></svg></div>
+      <p id="interaction" class="interaction" aria-live="polite">Move to scatter. Leave to reform.</p>
+      <p class="fallback" hidden>Your browser could not start Canvas. <a href="https://github.com/LIghtJUNction/particle-sculpture-skill">View the source and GIF demo.</a></p>
+    </div>
+    <div class="controls">
+      <div class="scenes" role="group" aria-label="Choose a sculpture">
+        <button data-scene="0" aria-pressed="true">Apple</button>
+        <button data-scene="1" aria-pressed="false">Bird</button>
+        <button data-scene="auto" aria-pressed="false">Auto sequence</button>
+      </div>
+      <div class="settings">
+        <button id="theme" aria-label="Use light background">Light</button>
+        <button id="pause" aria-pressed="false">Pause</button>
+      </div>
+    </div>
+  </main>
+  <footer><p>From <a href="https://api.lmm.best/">api.lmm.best</a> · Made of points, moved by you.</p><a href="https://github.com/LIghtJUNction/particle-sculpture-skill">Source · AGPL-3.0</a></footer>
+  <script type="module" src="examples/apple-bird/app.js"></script>
+</body>
+</html>

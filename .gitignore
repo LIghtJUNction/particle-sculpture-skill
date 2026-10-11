@@ -1,0 +1,7 @@
+node_modules/
+output/
+.impeccable/review/
+*.webm
+*.mp4
+*.log
+.DS_Store

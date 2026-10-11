@@ -1,0 +1,4 @@
+interface:
+  display_name: "Particle Sculpture"
+  short_description: "Build 3D particle objects and record browser GIFs"
+  default_prompt: "Use $particle-sculpture to create an interactive 3D particle sculpture with articulated motion and mouse/touch scatter-and-reform physics."
