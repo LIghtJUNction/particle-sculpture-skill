@@ -2,7 +2,7 @@
 
 把 [api.lmm.best](https://api.lmm.best/) 首页的 **3D 点云建模、关节动画、粒子转场、鼠标 / 触摸散开归位** 提取成一个独立的 Agent Skill。
 
-[在线玩示例](https://lightjunction.github.io/particle-sculpture-skill/) · [技能入口](SKILL.md) · [制作方法](references/architecture.md) · [源码来源](NOTICE)
+[在线玩示例](https://lightjunction.github.io/particle-sculpture-skill/) · [X 实测展示](https://x.com/LIghtJUNction_x/status/2109308972499095657) · [技能入口](SKILL.md) · [制作方法](references/architecture.md) · [源码来源](NOTICE)
 
 ![浏览器实测：旋转苹果、鼠标散开归位、扑翼飞鸟](media/apple-bird.gif)
 
