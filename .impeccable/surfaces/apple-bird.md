@@ -1,5 +1,7 @@
 # Apple and bird showcase
 
+Scope: this document and `.impeccable/design.json` describe the root Apple / Bird example only. Do not apply its fonts, colors or composition as global constraints on the skill or the style studio. Use `references/design-directions.md` for new work.
+
 Mode: Experience. The actual interactive objects lead; the surrounding interface recedes.
 
 Primary target: index.html

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-10-11T15:37:32Z",
-  "title": "Design System: Particle Sculpture",
+  "title": "Apple / Bird example design system",
   "extensions": {
     "colorMeta": {
       "poster-ground": {
@@ -48,7 +48,7 @@
     "typographyMeta": {
       "display": {
         "displayName": "Editorial headline",
-        "purpose": "Scene title with italic accent emphasis; mobile sizing is documented in DESIGN.md Layout."
+        "purpose": "Apple / Bird scene title with italic accent emphasis; mobile sizing is defined in examples/apple-bird/style.css."
       },
       "title": {
         "displayName": "Serif wordmark",
@@ -151,7 +151,7 @@
   ],
   "narrative": {
     "northStar": "Fine point field, editorial serif",
-    "overview": "Preserve the api.lmm.best particle identity: recognizable three-dimensional subjects built from fine points, with Bodoni headlines and a quiet surrounding interface. The sculpture supplies color, depth and movement; the page uses an open ground and restrained text controls.",
+    "overview": "Scope: root Apple / Bird example only, not defaults for the particle-sculpture skill or style studio. Preserve the api.lmm.best particle identity: recognizable three-dimensional subjects built from fine points, with Bodoni headlines and a quiet surrounding interface. The sculpture supplies color, depth and movement; the page uses an open ground and restrained text controls.",
     "keyCharacteristics": [
       "A live point field with brush displacement and spring recovery.",
       "Green-black and warm-paper themes, with editorial serif emphasis.",

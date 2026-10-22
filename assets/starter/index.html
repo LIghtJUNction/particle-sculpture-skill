@@ -1,4 +1,42 @@
 <!doctype html>
 <!-- Copyright (C) 2026 LIghtJUNction; SPDX-License-Identifier: AGPL-3.0-or-later -->
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Particle sculpture</title><link rel="icon" href="data:,"><link rel="stylesheet" href="style.css"></head>
-<body><main><h1>Move through the sculpture.</h1><p>Mouse or touch scatters the points. Leave to reform.</p><canvas aria-label="Interactive particle sculpture"></canvas><p id="fallback" hidden>Canvas is unavailable in this browser.</p><button id="pause" aria-pressed="false">Pause</button></main><footer><a href="https://github.com/LIghtJUNction/particle-sculpture-skill">Source · AGPL-3.0</a></footer><script type="module" src="app.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Particle studies — choose a direction</title>
+  <meta name="description" content="Six particle sculpture directions. Explore palette, movement, transitions and camera in one live study.">
+  <link rel="icon" href="data:,"><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="particle-studio" data-particle-studio data-style="editorial" data-theme="light">
+  <header class="masthead"><a class="wordmark" href="https://github.com/LIghtJUNction/particle-sculpture-skill">Particle <span>/ studies</span></a><span class="edition">Six ways to move</span></header>
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div class="intro"><p class="eyebrow" id="direction">01 / Editorial crossing</p><h1 id="title">A little space.<br>A new direction.</h1><p class="description" id="description">Paper, generous type and a quiet sculpture that carries the story.</p></div>
+      <div class="stage"><canvas aria-label="Interactive three-dimensional particle sculpture"></canvas><p id="fallback" hidden>The sculpture cannot be displayed. You can still explore the design choices below.</p><div class="stage-caption"><span id="subject">Ferry / bridge</span><span id="hint">Move through the points.</span></div></div>
+    </section>
+    <section class="controls" aria-label="Design choices">
+      <div class="primary-controls">
+        <label>Direction<select id="style"></select></label>
+        <label>Palette<select id="palette"></select></label>
+        <label>Theme<select id="theme"><option value="light">Light ground</option><option value="dark">Dark ground</option></select></label>
+        <button id="pause" aria-pressed="false">Pause</button>
+      </div>
+      <details>
+        <summary>Movement, transition &amp; camera</summary>
+        <div class="advanced-controls">
+          <label>Movement<select id="motion"></select></label>
+          <label>Transition<select id="transition"></select></label>
+          <label>Projection<select id="projection"></select></label>
+          <label class="toggle"><input type="checkbox" id="sequence" checked> Auto cycle</label>
+          <label class="scrubber">Preview the transition<input type="range" id="progress" min="0" max="1" step="0.005" value="0" aria-label="Transition between the first and second sculpture"></label>
+        </div>
+      </details>
+      <div class="choice-actions"><p class="selection-note">Changing direction keeps your edits. Reset restores the direction’s starting choices.</p><button id="reset" type="button">Reset direction</button></div>
+      <p id="notice" role="status" hidden></p>
+    </section>
+  </main>
+  <footer><span>Real forms. Different points of view.</span><a href="https://github.com/LIghtJUNction/particle-sculpture-skill">Source &amp; skill · AGPL-3.0</a></footer>
+</div>
+<script type="module" src="app.js"></script>
+</body></html>

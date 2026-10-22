@@ -1,15 +1,16 @@
 {
   "name": "particle-sculpture-skill",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
-  "description": "An agent skill for interactive 3D point-cloud sculptures, extracted from api.lmm.best",
+  "description": "An agent skill with selectable particle styles, semantic palettes, transitions and 3D motion",
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "python3 -m http.server 4177 --bind 127.0.0.1",
     "test": "node --test tests/*.test.mjs",
-    "check:browser": "node scripts/check-browser.mjs",
-    "record": "node scripts/record-demo.mjs"
+    "check:browser": "node scripts/check-browser.mjs && node scripts/check-studio.mjs",
+    "record": "node scripts/record-demo.mjs",
+    "check:studio": "node scripts/check-studio.mjs"
   },
   "devDependencies": {
     "playwright": "1.64.0"

@@ -1,10 +1,27 @@
 /* Copyright (C) 2026 LIghtJUNction; SPDX-License-Identifier: AGPL-3.0-or-later */
-import {
-  hash,
-  mix as lerp,
-  smooth,
+import { hash, mix as lerp } from './geometry.js'
 
-} from './geometry.js'
+const defaults = { projection: 'perspective', zoom: 1, spacing: null, brush: 1, materials: {} }
+function renderOptions(value) {
+  const options = { ...defaults, ...value }
+  if (!['perspective', 'orthographic'].includes(options.projection)) throw new RangeError('Unknown projection')
+  for (const [key, low, high] of [['zoom', .25, 2], ['brush', 0, 2], ['spacing', .75, 8]]) {
+    if (key === 'spacing' && options[key] === null) continue
+    if (!Number.isFinite(options[key]) || options[key] < low || options[key] > high) {
+      throw new RangeError(`${key} must be between ${low} and ${high}`)
+    }
+  }
+  if (!options.materials || typeof options.materials !== 'object' || Array.isArray(options.materials)) {
+    throw new TypeError('materials must map role names to RGB arrays')
+  }
+  options.materials = Object.fromEntries(Object.entries(options.materials).map(([role, color]) => {
+    if (!Array.isArray(color) || color.length !== 3 || !color.every(c => Number.isFinite(c) && c >= 0 && c <= 255)) {
+      throw new RangeError(`Invalid RGB material: ${role}`)
+    }
+    return [role, [...color]]
+  }))
+  return options
+}
 
 const pack = (r        , g        , b        ) =>
   ((255 << 24) |
@@ -45,8 +62,10 @@ export function posterPalette(background      ) {
 export function createRenderer(
   canvas                   ,
   timeline,
-  onReady = () => {}
+  onReady = () => {},
+  configuration = {}
 ) {
+  let options = renderOptions(configuration)
   const context = canvas.getContext('2d', { alpha: false })
   if (!context) return null
   let alive = true,
@@ -69,10 +88,11 @@ export function createRenderer(
     lastFringe = -1
   let colors = new WeakMap                ()
   let palette = posterPalette([7, 7, 7])
-  let themeKey
+  let themeKey, themeDirty = true
   const refreshTheme = () => {
     const key = document.documentElement.className
-    if (key === themeKey) return
+    if (key === themeKey && !themeDirty) return
+    themeDirty = false
     themeKey = key
     const value = getComputedStyle(canvas)
       .getPropertyValue('--poster-ground')
@@ -96,7 +116,13 @@ export function createRenderer(
         trail: new Uint32Array(points.length),
       }
       for (let i = 0; i < points.length; i++) {
-        const pixel = palette.ink(points[i].color)
+        const p = points[i]
+        const material = Object.hasOwn(options.materials, p.material) ? options.materials[p.material] : null
+        const shade = Number.isFinite(p.shade) ? Math.max(0, Math.min(1, p.shade)) : 1
+        // Semantic materials are already chosen for the theme; retain their authored tone.
+        const pixel = material
+          ? palette.coverage(pack(...material.map(c => c * shade)), .96)
+          : palette.ink(p.color)
         paint.solid[i] = pixel
         paint.edge[i] = palette.coverage(pixel, fringe)
         paint.corner[i] = palette.coverage(pixel, fringe * fringe)
@@ -107,7 +133,12 @@ export function createRenderer(
     return paint
   }
   return {
-    draw(time        , pointer         , delta        , still = false, selected = null) {
+    configure(value = {}) {
+      options = renderOptions({ ...options, ...value })
+      themeDirty = true
+    },
+    invalidateTheme() { themeDirty = true },
+    draw(time        , pointer         , delta        , still = false, selected = null, scenePosition = null) {
       if (!alive) return
       const w = canvas.clientWidth,
         h = canvas.clientHeight
@@ -126,9 +157,9 @@ export function createRenderer(
       }
       refreshTheme()
       const seconds = still ? 0 : Math.min(0.08, Math.max(0, Number.isFinite(delta) ? delta : 0))
-      const left = timeline.at(time, selected)
+      const left = timeline.at(time, selected, scenePosition)
       canvas.dataset.sculpture = left.mix < 0.5 ? left.from.id : left.to.id
-      const grid = w < 680 ? 1.7 : 2.7,
+      const grid = options.spacing ?? (w < 680 ? 1.7 : 2.7),
         diameter = grid * (palette.light ? 0.96 : 0.83) * ratio
       const fullSize = Math.floor(diameter)
       const fringe = diameter - fullSize > 0.1 ? diameter - fullSize : 0
@@ -146,16 +177,18 @@ export function createRenderer(
         return { ...layer, pose: model.animate(layer.age), paint: paintFor(model.points, fringe),
           cy: Math.cos(yaw), sy: Math.sin(yaw), cp: Math.cos(pitch), sp: Math.sin(pitch) }
       })
-      const spread = Math.sin(Math.PI * left.mix) ** 2
+      const dissolve = left.transition === 'dissolve' && layers.length > 1
+      const blending = layers.length > 1 && !dissolve
+      const spread = (left.transition ?? 'disperse') === 'disperse' ? Math.sin(Math.PI * left.mix) ** 2 : 0
       const n = Math.min(
-        count,
+        w < 680 ? Math.min(count, 22000) : count,
         Math.max(...layers.map((l) => l.model.points.length))
       )
       if (!n || !bitmap || !pixels || !depths) return
       pixels.fill(palette.background)
       depths.fill(-Infinity)
       // Leave room for dispersal in every direction, then return to the resting frame.
-      const scale = Math.min(w * 0.34, h * 0.35) * (1 - spread * 0.3),
+      const scale = Math.min(w * 0.34, h * 0.35) * (1 - spread * 0.3) * options.zoom,
         centerX = w / 2,
         centerY = h * (0.5 + spread * 0.03)
       const stride = canvas.width,
@@ -179,6 +212,9 @@ export function createRenderer(
           cornerPixel = 0,
           trail = 0
         for (const layer of layers) {
+          // Stable point replacement, not positional interpolation or per-frame noise.
+          if (dissolve && layer !== layers[scatter[i * 2] + .5 < left.mix ? 1 : 0]) continue
+          const weight = dissolve ? 1 : layer.weight
           const sample = Math.floor((i / n) * layer.model.points.length),
             p = layer.model.points[sample]
           position[0] = p.x
@@ -187,21 +223,21 @@ export function createRenderer(
           layer.pose(p, position)
           const rx = position[0] * layer.cy + position[2] * layer.sy
           const rz = position[2] * layer.cy - position[0] * layer.sy
-          x += rx * layer.weight
-          y += (position[1] * layer.cp + rz * layer.sp) * layer.weight
-          z += (rz * layer.cp - position[1] * layer.sp) * layer.weight
+          x += rx * weight
+          y += (position[1] * layer.cp + rz * layer.sp) * weight
+          z += (rz * layer.cp - position[1] * layer.sp) * weight
           pixel = layer.paint.solid[sample]
-          if (layers.length === 1) {
+          if (!blending) {
             edgePixel = layer.paint.edge[sample]
             cornerPixel = layer.paint.corner[sample]
             trail = layer.paint.trail[sample]
           } else {
-            red += (pixel & 255) * layer.weight
-            green += ((pixel >>> 8) & 255) * layer.weight
-            blue += ((pixel >>> 16) & 255) * layer.weight
+            red += (pixel & 255) * weight
+            green += ((pixel >>> 8) & 255) * weight
+            blue += ((pixel >>> 16) & 255) * weight
           }
         }
-        if (layers.length > 1) {
+        if (blending) {
           pixel = pack(red, green, blue)
           edgePixel = palette.coverage(pixel, fringe)
           cornerPixel = palette.coverage(pixel, fringe * fringe)
@@ -210,13 +246,13 @@ export function createRenderer(
         x += scatter[i * 2] * spread * 1.8
         y += (scatter[i * 2 + 1] * 1.25 + 0.16) * spread
         z += scatter[i * 2] * spread * 0.45
-        const perspective = 3.9 / (3.9 - z * 0.42)
+        const perspective = options.projection === 'orthographic' ? 1 : 3.9 / Math.max(.5, 3.9 - z * .42)
         const px = Math.round((centerX + x * scale * perspective) / grid) * grid
         const py = Math.round((centerY - y * scale * perspective) / grid) * grid
         const index = i * 4
         let fx = 0,
           fy = 0
-        if (pointer.active && !still) {
+        if (pointer.active && !still && options.brush > 0) {
           const along = segment
             ? Math.max(
                 0,
@@ -232,7 +268,7 @@ export function createRenderer(
             dy = py - (pointer.previousY + brushY * along)
           const distance = Math.hypot(dx, dy)
           if (distance < radius) {
-            const force = Math.pow(1 - distance / radius, 2)
+            const force = Math.pow(1 - distance / radius, 2) * options.brush
             fx =
               force *
               (pointer.vx * 0.16 +
@@ -302,7 +338,8 @@ export function createRenderer(
         }
       }
       context.putImageData(bitmap, 0, 0)
-      Object.assign(stats, { frames: stats.frames+1, points: n, maxOffset, time, scene: canvas.dataset.sculpture })
+      Object.assign(stats, { frames: stats.frames+1, points: n, maxOffset, time, scene: canvas.dataset.sculpture,
+        transition: left.transition ?? 'disperse', projection: options.projection })
       // Notify only after a real frame. A microtask avoids re-entering the owner.
       if (!ready) {
         ready = true

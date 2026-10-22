@@ -2,15 +2,15 @@
 import { createRenderer } from './renderer.js';
 
 /** Own exactly one RAF. Pointer coordinates and velocity are in CSS pixels. */
-export function mountSculpture(canvas, timeline, { onFrame = () => {}, onState = () => {} } = {}) {
-  const renderer = createRenderer(canvas, timeline);
+export function mountSculpture(canvas, timeline, { onFrame = () => {}, onState = () => {}, render: renderOptions = {} } = {}) {
+  const renderer = createRenderer(canvas, timeline, undefined, renderOptions);
   if (!renderer) { onState('unsupported'); return null; }
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
   const pointer = { x: 0, y: 0, previousX: 0, previousY: 0, vx: 0, vy: 0, active: false };
   let target = { x: 0, y: 0, active: false };
   let frame = null, disposed = false, visible = true, dirty = true;
-  let paused = navigator.connection?.saveData === true, last = 0, time = 0, selected = null;
+  let paused = navigator.connection?.saveData === true, last = 0, time = 0, selected = null, position = null;
   const state = () => reduced.matches ? 'reduced' : paused ? 'paused' : 'playing';
   let announced;
   const announce = () => {
@@ -20,7 +20,7 @@ export function mountSculpture(canvas, timeline, { onFrame = () => {}, onState =
   const schedule = () => {
     if (frame === null && !disposed && visible && !document.hidden) frame = requestAnimationFrame(render);
   };
-  const refresh = () => { dirty = true; schedule(); };
+  const refresh = () => { renderer.invalidateTheme(); dirty = true; schedule(); };
   const resetClock = () => {
     if (frame !== null) cancelAnimationFrame(frame);
     frame = null; last = 0; target.active = false;
@@ -45,7 +45,8 @@ export function mountSculpture(canvas, timeline, { onFrame = () => {}, onState =
     pointer.vx += (vx - pointer.vx) * (1 - Math.exp(-elapsed / 110));
     pointer.vy += (vy - pointer.vy) * (1 - Math.exp(-elapsed / 110));
     pointer.active = target.active && animate;
-    renderer.draw(time, pointer, dt, !animate, selected);
+    const chapter = reduced.matches && position !== null ? Math.round(position) : position;
+    renderer.draw(time, pointer, dt, !animate, selected, chapter);
     onFrame(renderer.inspect()); dirty = false;
     if (animate) schedule();
   }
@@ -71,7 +72,10 @@ export function mountSculpture(canvas, timeline, { onFrame = () => {}, onState =
   });
   const theme = new MutationObserver(refresh);
   resize.observe(canvas); intersection.observe(canvas);
-  theme.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  // Observe scoped themes as well as the root; ignore renderer-owned data attributes.
+  for (let node = canvas; node; node = node.parentElement) {
+    theme.observe(node, { attributes: true, attributeFilter: ['class', 'style', 'data-theme', 'data-palette', 'data-style'] });
+  }
   canvas.addEventListener('pointermove', move, { passive: true });
   canvas.addEventListener('pointerdown', move, { passive: true });
   for (const name of ['pointerleave', 'pointercancel', 'pointerup']) canvas.addEventListener(name, leave);
@@ -83,9 +87,15 @@ export function mountSculpture(canvas, timeline, { onFrame = () => {}, onState =
   reduced.addEventListener('change', resetClock);
   announce(); schedule();
   return {
-    select(index) { selected = index; time = 0; resetClock(); },
+    select(index) { selected = index; position = null; time = 0; resetClock(); },
+    seek(value) {
+      position = Math.max(0, Math.min(timeline.scenes.length - 1, Number.isFinite(value) ? value : 0));
+      selected = null; dirty = true; schedule();
+    },
+    configure(value) { renderer.configure(value); refresh(); },
+    refresh,
     pause(value = !paused) { paused = Boolean(value); resetClock(); },
-    inspect() { return { ...renderer.inspect(), state: state(), visible, selected }; },
+    inspect() { return { ...renderer.inspect(), state: state(), visible, selected, position }; },
     dispose() {
       disposed = true; if (frame !== null) cancelAnimationFrame(frame);
       resize.disconnect(); intersection.disconnect(); theme.disconnect();
